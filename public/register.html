@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>新規登録 - TODO アプリケーション</title>
+    <link rel="stylesheet" href="/css/style.css" />
+  </head>
+  <body>
+    <div class="auth-container">
+      <div class="card auth-card">
+        <h1>新規ユーザー登録</h1>
+
+        <div id="alert" class="alert hidden"></div>
+
+        <form id="registerForm">
+          <div class="form-group">
+            <label for="username">ユーザー名</label>
+            <input
+              type="text"
+              id="username"
+              name="username"
+              class="form-control"
+              placeholder="ユーザー名を入力"
+              required
+              autocomplete="username"
+              minlength="3"
+              maxlength="50"
+            />
+            <small>3〜50文字、英数字とアンダースコアが使用できます</small>
+          </div>
+
+          <div class="form-group">
+            <label for="password">パスワード</label>
+            <input
+              type="password"
+              id="password"
+              name="password"
+              class="form-control"
+              placeholder="パスワードを入力"
+              required
+              autocomplete="new-password"
+              minlength="8"
+            />
+            <small>8文字以上で入力してください</small>
+          </div>
+
+          <button type="submit" id="submitBtn" class="btn btn-primary btn-block">
+            登録
+          </button>
+        </form>
+
+        <div class="link-area">
+          <a href="/login">ログイン画面へ戻る</a>
+        </div>
+      </div>
+    </div>
+
+    <script src="/js/register.js"></script>
+  </body>
+</html>

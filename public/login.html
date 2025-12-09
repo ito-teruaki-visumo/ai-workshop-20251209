@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ログイン - TODO アプリケーション</title>
+    <link rel="stylesheet" href="/css/style.css" />
+  </head>
+  <body>
+    <div class="auth-container">
+      <div class="card auth-card">
+        <h1>TODO アプリケーション</h1>
+
+        <div id="alert" class="alert hidden"></div>
+
+        <form id="loginForm">
+          <div class="form-group">
+            <label for="username">ユーザー名</label>
+            <input
+              type="text"
+              id="username"
+              name="username"
+              class="form-control"
+              placeholder="ユーザー名を入力"
+              required
+              autocomplete="username"
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="password">パスワード</label>
+            <input
+              type="password"
+              id="password"
+              name="password"
+              class="form-control"
+              placeholder="パスワードを入力"
+              required
+              autocomplete="current-password"
+            />
+          </div>
+
+          <button type="submit" id="submitBtn" class="btn btn-primary btn-block">
+            ログイン
+          </button>
+        </form>
+
+        <div class="link-area">
+          <a href="/register">新規登録はこちら</a>
+        </div>
+      </div>
+    </div>
+
+    <script src="/js/login.js"></script>
+  </body>
+</html>

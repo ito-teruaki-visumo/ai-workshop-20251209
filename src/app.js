@@ -6,6 +6,7 @@ require("dotenv").config();
 const express = require("express");
 const session = require("express-session");
 const helmet = require("helmet");
+const path = require("path");
 
 const { testConnection, initializeDatabase } = require("./config/database");
 const { SESSION } = require("./config/constants");
@@ -18,8 +19,19 @@ const tasksRoutes = require("./routes/tasks");
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// セキュリティミドルウェア
-app.use(helmet());
+// セキュリティミドルウェア（静的ファイル用にCSP調整）
+app.use(
+  helmet({
+    contentSecurityPolicy: {
+      directives: {
+        defaultSrc: ["'self'"],
+        styleSrc: ["'self'", "'unsafe-inline'"],
+        scriptSrc: ["'self'"],
+        imgSrc: ["'self'", "data:"],
+      },
+    },
+  })
+);
 
 // JSONパーサー
 app.use(express.json());
@@ -40,17 +52,53 @@ app.use(
   })
 );
 
-// ルートの設定
+// 静的ファイルの配信
+app.use(express.static(path.join(__dirname, "../public")));
+
+// APIルートの設定
 app.use("/api/auth", authRoutes);
 app.use("/api/tasks", tasksRoutes);
+
+// 認証状態確認エンドポイント
+app.get("/api/auth/me", (req, res) => {
+  if (req.session.userId) {
+    res.json({
+      authenticated: true,
+      user: {
+        id: req.session.userId,
+        username: req.session.username,
+      },
+    });
+  } else {
+    res.json({ authenticated: false });
+  }
+});
 
 // ヘルスチェック
 app.get("/health", (req, res) => {
   res.json({ status: "ok", timestamp: new Date().toISOString() });
 });
 
-// 404ハンドラー
-app.use(notFoundHandler);
+// HTMLページのルーティング（SPA対応）
+app.get("/login", (req, res) => {
+  res.sendFile(path.join(__dirname, "../public/login.html"));
+});
+
+app.get("/register", (req, res) => {
+  res.sendFile(path.join(__dirname, "../public/register.html"));
+});
+
+app.get("/dashboard", (req, res) => {
+  res.sendFile(path.join(__dirname, "../public/dashboard.html"));
+});
+
+// ルートアクセスはログインページにリダイレクト
+app.get("/", (req, res) => {
+  res.redirect("/login");
+});
+
+// API用404ハンドラー
+app.use("/api", notFoundHandler);
 
 // エラーハンドラー
 app.use(errorHandler);

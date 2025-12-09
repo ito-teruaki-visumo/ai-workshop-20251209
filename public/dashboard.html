@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ダッシュボード - TODO アプリケーション</title>
+    <link rel="stylesheet" href="/css/style.css" />
+  </head>
+  <body>
+    <header class="header">
+      <div class="header-content">
+        <h1>TODO アプリケーション</h1>
+        <div class="user-info">
+          <span>ログイン中: <strong id="usernameDisplay">-</strong></span>
+          <button id="logoutBtn" class="btn btn-outline btn-logout">
+            ログアウト
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <main class="container">
+      <div id="alert" class="alert hidden"></div>
+
+      <!-- タスク追加フォーム -->
+      <div class="card">
+        <form id="addTaskForm" class="task-input-area">
+          <input
+            type="text"
+            id="newTaskTitle"
+            class="form-control"
+            placeholder="新しいタスクを入力..."
+            required
+            maxlength="255"
+          />
+          <button type="submit" class="btn btn-success">追加</button>
+        </form>
+      </div>
+
+      <!-- フィルター・検索エリア -->
+      <div class="card">
+        <div class="filter-area">
+          <input
+            type="text"
+            id="searchInput"
+            class="form-control"
+            placeholder="タスクを検索..."
+          />
+          <div class="filter-buttons">
+            <button class="filter-btn active" data-filter="all">全て</button>
+            <button class="filter-btn" data-filter="pending">未完了</button>
+            <button class="filter-btn" data-filter="completed">完了</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- タスク一覧 -->
+      <div class="card">
+        <div id="loading" class="loading">
+          <div class="spinner"></div>
+        </div>
+
+        <ul id="taskList" class="task-list hidden"></ul>
+
+        <div id="emptyState" class="empty-state hidden">
+          <p>タスクがありません</p>
+          <p>新しいタスクを追加してください</p>
+        </div>
+      </div>
+
+      <!-- 統計情報 -->
+      <div class="stats">
+        完了: <strong id="completedCount">0</strong> / 全体:
+        <strong id="totalCount">0</strong>
+      </div>
+    </main>
+
+    <script src="/js/dashboard.js"></script>
+  </body>
+</html>
