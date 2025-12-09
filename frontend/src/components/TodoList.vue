@@ -5,6 +5,7 @@ interface Todo {
   id: number
   title: string
   isCompleted: boolean
+  isDeleted?: boolean
 }
 
 const todos = ref<Todo[]>([])
@@ -94,7 +95,15 @@ onMounted(fetchTodos)
 
     <ul class="todo-list">
       <li v-for="todo in todos" :key="todo.id" :class="{ completed: todo.isCompleted }">
-        <span @click="toggleTodo(todo)">{{ todo.title }}</span>
+        <div class="todo-item-content">
+          <input 
+            type="checkbox" 
+            :checked="todo.isCompleted" 
+            @change="toggleTodo(todo)"
+            class="todo-checkbox"
+          />
+          <span @click="toggleTodo(todo)">{{ todo.title }}</span>
+        </div>
         <button @click="deleteTodo(todo.id)" class="delete-btn">Delete</button>
       </li>
     </ul>
@@ -172,6 +181,20 @@ li:last-child {
 
 li:hover {
   background-color: #fcfcfc;
+}
+
+.todo-item-content {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 1;
+}
+
+.todo-checkbox {
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+  accent-color: #8f76d6;
 }
 
 li span {

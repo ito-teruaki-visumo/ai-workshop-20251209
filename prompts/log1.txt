@@ -61,3 +61,32 @@ Colors:
 Action:
 1. Update style.css to set global background color and text color.
 2. Update TodoList.vue to use primary and secondary colors for buttons and UI elements.
+User request: Implement additional features from todo1.md.
+1. Soft delete (IsDeleted flag).
+2. Checkbox for completion.
+
+Plan:
+1. Backend:
+   - Update Todo model to include `IsDeleted`.
+   - Update database schema to include `IsDeleted` column.
+   - Update GET /todos to filter out deleted items.
+   - Update DELETE /todos/{id} to perform soft delete (update IsDeleted = true).
+   - Add POST /todos/{id}/restore to restore deleted items (optional but good for "undo").
+2. Frontend:
+   - Update Todo interface.
+   - Update TodoList.vue to use checkbox for completion.
+   - Update delete logic.
+Action:
+1. Restart TodoApi to apply backend changes (schema update).
+User reported "Unknown column 'IsDeleted' in 'field list'".
+Reason: MySQL 5.7/8.0 syntax for "ADD COLUMN IF NOT EXISTS" might not be supported or behaving as expected depending on the exact version, or the migration logic failed silently but the column wasn't added.
+Actually, `ADD COLUMN IF NOT EXISTS` is supported in MariaDB 10.2+ but standard MySQL 8.0 supports it. However, if the user is running an older MySQL or MariaDB, it might fail.
+Also, the error `Unknown column 'IsDeleted'` likely comes from the SELECT query running before the migration had a chance to run or if the migration failed.
+Wait, the migration code is inside `InitDatabase`.
+Let's try a more robust way to check if column exists before adding it, or just ignore the error if adding fails (assuming it exists).
+Or better, check information_schema.
+
+Action:
+1. Update `InitDatabase` to check `information_schema` for the column existence before trying to add it.
+Action:
+1. Restart TodoApi again.
