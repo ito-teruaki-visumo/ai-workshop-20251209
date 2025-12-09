@@ -90,3 +90,40 @@ Action:
 1. Update `InitDatabase` to check `information_schema` for the column existence before trying to add it.
 Action:
 1. Restart TodoApi again.
+User request: Implement additional feature 2 from todo1.md.
+1. Align task name to the left.
+
+Action:
+1. Update TodoList.vue styles to ensure task name is left-aligned.
+   - The current structure is `li > div.todo-item-content > span`.
+   - `li` has `justify-content: space-between`.
+   - `todo-item-content` has `flex: 1`.
+   - `span` inside `todo-item-content` should take available space or just be left aligned naturally since it's in a flex container.
+   - I will explicitly add `text-align: left` to the span or ensure the flex container aligns items to start.
+User request: Implement additional feature 3 from todo1.md.
+1. Reduce margin/padding around checkbox.
+
+Action:
+1. Update TodoList.vue styles.
+   - Currently `gap: 12px` in `.todo-item-content`.
+   - Reduce this gap to make checkbox closer to text.
+User request: Implement additional feature 4 from todo1.md.
+1. Make checkbox and task name stick together (zero gap).
+
+Action:
+1. Update TodoList.vue styles.
+   - Set `gap: 0` in `.todo-item-content`.
+   - Maybe add a very small margin to the checkbox if needed, but user said "ぴったりくっつける" (stick together exactly), so 0 gap is likely what is requested.
+User request: Implement additional feature 5 from todo1.md.
+1. Remove `flex: 1` from `.todo-item-content`.
+
+Action:
+1. Update TodoList.vue styles.
+   - Remove `flex: 1` from `.todo-item-content`.
+   - This will make the content take only as much space as needed, instead of expanding to fill the available space.
+User request: Implement additional feature 6 from todo1.md.
+1. Add margin between checkbox and task name.
+
+Action:
+1. Update TodoList.vue styles.
+   - Restore `gap` in `.todo-item-content` to a small value (e.g., 8px) to add spacing.

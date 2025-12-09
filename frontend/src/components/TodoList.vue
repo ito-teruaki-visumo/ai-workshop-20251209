@@ -186,8 +186,8 @@ li:hover {
 .todo-item-content {
   display: flex;
   align-items: center;
-  gap: 12px;
-  flex: 1;
+  gap: 8px; /* Added gap back */
+  justify-content: flex-start; /* Ensure content starts from left */
 }
 
 .todo-checkbox {
@@ -202,6 +202,7 @@ li span {
   flex: 1;
   font-size: 1.1rem;
   transition: color 0.2s;
+  text-align: left; /* Explicitly align text to left */
 }
 
 li.completed span {
