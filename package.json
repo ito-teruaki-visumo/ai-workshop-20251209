@@ -1,16 +1,33 @@
 {
-  "name": "workspace",
+  "name": "todo-app",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "description": "TODO アプリケーション - ユーザー認証機能を備えた個人用タスク管理アプリ",
+  "main": "src/app.js",
   "scripts": {
-    "start": "node index.js"
+    "start": "node src/app.js",
+    "dev": "nodemon src/app.js",
+    "db:init": "node src/scripts/initDatabase.js",
+    "test": "jest"
   },
-  "keywords": [],
+  "keywords": [
+    "todo",
+    "task",
+    "authentication"
+  ],
   "author": "",
   "license": "ISC",
   "type": "commonjs",
   "dependencies": {
+    "bcrypt": "^5.1.0",
+    "dotenv": "^16.0.0",
+    "express": "^4.18.0",
+    "express-session": "^1.17.0",
+    "helmet": "^7.0.0",
     "mysql2": "^3.15.3"
+  },
+  "devDependencies": {
+    "jest": "^29.0.0",
+    "nodemon": "^2.0.0",
+    "supertest": "^6.3.0"
   }
 }
