@@ -17,14 +17,17 @@ src/
 │   ├── constants.js        # 定数定義
 │   └── database.js         # DB接続設定
 ├── controllers/
-│   └── authController.js   # 認証ロジック
+│   ├── authController.js   # 認証ロジック
+│   └── tasksController.js  # タスク管理ロジック
 ├── middleware/
 │   ├── auth.js             # 認証ミドルウェア
 │   └── errorHandler.js     # エラーハンドリング
 ├── models/
-│   └── User.js             # ユーザーモデル
+│   ├── User.js             # ユーザーモデル
+│   └── Task.js             # タスクモデル
 ├── routes/
-│   └── auth.js             # 認証ルート
+│   ├── auth.js             # 認証ルート
+│   └── tasks.js            # タスクルート
 ├── scripts/
 │   └── initDatabase.js     # DB初期化スクリプト
 └── utils/
@@ -81,6 +84,15 @@ npm run dev  # nodemonで自動リロード
 | POST     | `/api/auth/login`    | ログイン     | 不要 |
 | POST     | `/api/auth/logout`   | ログアウト   | 必要 |
 
+### タスク管理関連
+
+| メソッド | エンドポイント   | 説明           | 認証 |
+| -------- | ---------------- | -------------- | ---- |
+| GET      | `/api/tasks`     | タスク一覧取得 | 必要 |
+| POST     | `/api/tasks`     | タスク新規登録 | 必要 |
+| PATCH    | `/api/tasks/:id` | タスク更新     | 必要 |
+| DELETE   | `/api/tasks/:id` | タスク削除     | 必要 |
+
 ### ユーザー登録
 
 ```bash
@@ -134,12 +146,100 @@ curl -X POST http://localhost:3000/api/auth/logout \
 }
 ```
 
+### タスク一覧取得
+
+```bash
+curl -X GET http://localhost:3000/api/tasks \
+  -b cookies.txt
+```
+
+**クエリパラメータ:**
+
+- `status`: `all` | `completed` | `pending`
+- `search`: タスク名の部分検索
+- `sort`: `created` | `updated`
+
+**レスポンス (200):**
+
+```json
+{
+  "data": [
+    {
+      "id": 1,
+      "title": "買い物に行く",
+      "is_completed": false,
+      "created_at": "2025-12-09T10:00:00Z",
+      "updated_at": "2025-12-09T10:00:00Z"
+    }
+  ],
+  "total": 1,
+  "completed_count": 0
+}
+```
+
+### タスク新規登録
+
+```bash
+curl -X POST http://localhost:3000/api/tasks \
+  -H "Content-Type: application/json" \
+  -b cookies.txt \
+  -d '{"title": "買い物に行く"}'
+```
+
+**レスポンス (201):**
+
+```json
+{
+  "id": 1,
+  "title": "買い物に行く",
+  "is_completed": false,
+  "created_at": "2025-12-09T10:00:00Z",
+  "updated_at": "2025-12-09T10:00:00Z",
+  "message": "タスクが登録されました"
+}
+```
+
+### タスク更新
+
+```bash
+curl -X PATCH http://localhost:3000/api/tasks/1 \
+  -H "Content-Type: application/json" \
+  -b cookies.txt \
+  -d '{"is_completed": true}'
+```
+
+**レスポンス (200):**
+
+```json
+{
+  "id": 1,
+  "title": "買い物に行く",
+  "is_completed": true,
+  "created_at": "2025-12-09T10:00:00Z",
+  "updated_at": "2025-12-09T12:00:00Z",
+  "message": "タスクが更新されました"
+}
+```
+
+### タスク削除
+
+```bash
+curl -X DELETE http://localhost:3000/api/tasks/1 \
+  -b cookies.txt
+```
+
+**レスポンス (204):** 本文なし
+
 ## バリデーションルール
 
 ### ユーザー登録
 
 - **ユーザー名**: 3 ～ 50 文字、英数字とアンダースコアのみ
 - **パスワード**: 8 文字以上
+
+### タスク
+
+- **タスク名**: 1 ～ 255 文字
 
 ## エラーレスポンス
 
@@ -176,7 +276,7 @@ curl -X POST http://localhost:3000/api/auth/logout \
 ### Phase 1: MVP ✅
 
 - [x] ユーザー認証（登録・ログイン・ログアウト）
-- [ ] 基本的なタスク管理（CRUD）
+- [x] 基本的なタスク管理（CRUD）
 - [ ] シンプルな UI
 
 ### Phase 2: 拡張機能（将来対応）

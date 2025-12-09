@@ -13,6 +13,7 @@ const { notFoundHandler, errorHandler } = require("./middleware/errorHandler");
 
 // ルートのインポート
 const authRoutes = require("./routes/auth");
+const tasksRoutes = require("./routes/tasks");
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -41,6 +42,7 @@ app.use(
 
 // ルートの設定
 app.use("/api/auth", authRoutes);
+app.use("/api/tasks", tasksRoutes);
 
 // ヘルスチェック
 app.get("/health", (req, res) => {
