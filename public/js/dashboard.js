@@ -88,7 +88,9 @@ document.addEventListener("DOMContentLoaded", () => {
         params.append("search", searchQuery);
       }
 
-      const url = `/api/tasks${params.toString() ? "?" + params.toString() : ""}`;
+      const url = `/api/tasks${
+        params.toString() ? "?" + params.toString() : ""
+      }`;
       const response = await fetch(url);
 
       if (response.status === 401) {
@@ -127,7 +129,9 @@ document.addEventListener("DOMContentLoaded", () => {
     taskList.innerHTML = tasks
       .map(
         (task) => `
-      <li class="task-item ${task.is_completed ? "completed" : ""}" data-id="${task.id}">
+      <li class="task-item ${task.is_completed ? "completed" : ""}" data-id="${
+          task.id
+        }">
         <input 
           type="checkbox" 
           class="task-checkbox" 
@@ -139,7 +143,9 @@ document.addEventListener("DOMContentLoaded", () => {
           <div class="task-date">${formatDate(task.created_at)}</div>
         </div>
         <div class="task-actions">
-          <button class="btn btn-danger delete-btn" data-id="${task.id}">削除</button>
+          <button class="btn btn-danger delete-btn" data-id="${
+            task.id
+          }">削除</button>
         </div>
       </li>
     `
