@@ -52,3 +52,12 @@ Action:
    - Rename second `command` to `tableCommand`.
 Action:
 1. Restart TodoApi again.
+User request: Update design based on todo1.md.
+Colors:
+- background-color: #f9f9f9
+- primary: #8f76d6
+- secondary: #ab8cff
+
+Action:
+1. Update style.css to set global background color and text color.
+2. Update TodoList.vue to use primary and secondary colors for buttons and UI elements.

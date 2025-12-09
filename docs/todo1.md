@@ -15,3 +15,9 @@
 - バックエンド: C# / ASP.NET Core Web API
 - フロントエンド: TypeScript / Vue.js
 - データベース: MySQL
+
+## デザイン
+
+backgroud-color: #f9f9f9
+primary: #8f76d6
+secondary: #ab8cff

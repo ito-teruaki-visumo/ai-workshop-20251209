@@ -89,7 +89,7 @@ onMounted(fetchTodos)
         @keyup.enter="addTodo"
         placeholder="Add a new task..."
       />
-      <button @click="addTodo">Add</button>
+      <button @click="addTodo" class="add-btn">Add</button>
     </div>
 
     <ul class="todo-list">
@@ -106,6 +106,15 @@ onMounted(fetchTodos)
   max-width: 600px;
   margin: 0 auto;
   padding: 20px;
+  background-color: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+h1 {
+  color: #8f76d6;
+  text-align: center;
+  margin-bottom: 1.5rem;
 }
 
 .add-todo {
@@ -116,8 +125,31 @@ onMounted(fetchTodos)
 
 input {
   flex: 1;
-  padding: 8px;
+  padding: 12px;
   font-size: 16px;
+  border: 2px solid #eee;
+  border-radius: 8px;
+  outline: none;
+  transition: border-color 0.3s;
+}
+
+input:focus {
+  border-color: #ab8cff;
+}
+
+.add-btn {
+  background-color: #8f76d6;
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: background-color 0.3s;
+}
+
+.add-btn:hover {
+  background-color: #ab8cff;
 }
 
 .todo-list {
@@ -129,30 +161,44 @@ li {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 10px;
-  border-bottom: 1px solid #eee;
+  padding: 16px;
+  border-bottom: 1px solid #f0f0f0;
+  transition: background-color 0.2s;
+}
+
+li:last-child {
+  border-bottom: none;
+}
+
+li:hover {
+  background-color: #fcfcfc;
 }
 
 li span {
   cursor: pointer;
   flex: 1;
+  font-size: 1.1rem;
+  transition: color 0.2s;
 }
 
 li.completed span {
   text-decoration: line-through;
-  color: #888;
+  color: #aaa;
 }
 
 .delete-btn {
-  background-color: #ff4444;
-  color: white;
-  border: none;
-  padding: 5px 10px;
-  border-radius: 4px;
+  background-color: transparent;
+  color: #ff4444;
+  border: 1px solid #ff4444;
+  padding: 6px 12px;
+  border-radius: 6px;
   cursor: pointer;
+  font-size: 0.9rem;
+  transition: all 0.2s;
 }
 
 .delete-btn:hover {
-  background-color: #cc0000;
+  background-color: #ff4444;
+  color: white;
 }
 </style>
