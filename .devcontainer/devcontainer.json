@@ -12,14 +12,18 @@
       "extensions": [
         "dbaeumer.vscode-eslint",
         "esbenp.prettier-vscode",
-        "Vue.vscode-typescript-vue-plugin"
+        "Vue.vscode-typescript-vue-plugin",
+        "Vue.volar",
+        "vitest.explorer",
+        "EditorConfig.EditorConfig",
+        "ms-dotnettools.csharp",
+        "humao.rest-client"
       ],
       "settings": {
         "terminal.integrated.defaultProfile.linux": "bash"
       }
     }
   },
-  "forwardPorts": [3000],
-  "postCreateCommand": "npm install",
+  "forwardPorts": [3000, 5173],
   "remoteUser": "node"
 }
