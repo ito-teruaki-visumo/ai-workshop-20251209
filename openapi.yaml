@@ -1,0 +1,596 @@
+openapi: 3.0.0
+info:
+  title: TODO アプリケーション API
+  description: ユーザー認証機能を備えた、個人用タスク管理アプリケーションのAPI仕様
+  version: 1.0.0
+  contact:
+    name: Development Team
+  license:
+    name: MIT
+
+servers:
+  - url: http://localhost:3000
+    description: 開発環境
+  - url: https://api.example.com
+    description: 本番環境
+
+paths:
+  /api/auth/register:
+    post:
+      summary: ユーザー登録
+      description: 新規ユーザーを登録します
+      operationId: registerUser
+      tags:
+        - Authentication
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RegisterRequest"
+            examples:
+              success:
+                value:
+                  username: "user123"
+                  password: "SecurePassword123!"
+      responses:
+        201:
+          description: ユーザー登録成功
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RegisterResponse"
+              examples:
+                success:
+                  value:
+                    id: 1
+                    username: "user123"
+                    message: "ユーザー登録が完了しました"
+        400:
+          description: バリデーションエラー
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ValidationError"
+              examples:
+                validation_error:
+                  value:
+                    error: "バリデーションエラー"
+                    details:
+                      - "ユーザー名は3文字以上50文字以下である必要があります"
+                      - "パスワードは8文字以上である必要があります"
+        409:
+          description: ユーザー名が既に使用されている
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                conflict:
+                  value:
+                    error: "ユーザー名は既に使用されています"
+
+  /api/auth/login:
+    post:
+      summary: ユーザーログイン
+      description: ユーザー認証を行い、セッションを開始します
+      operationId: loginUser
+      tags:
+        - Authentication
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LoginRequest"
+            examples:
+              success:
+                value:
+                  username: "user123"
+                  password: "SecurePassword123!"
+      responses:
+        200:
+          description: ログイン成功
+          headers:
+            Set-Cookie:
+              schema:
+                type: string
+                example: "sessionId=abc123; Path=/; HttpOnly; Secure"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/LoginResponse"
+              examples:
+                success:
+                  value:
+                    id: 1
+                    username: "user123"
+                    message: "ログインしました"
+        400:
+          description: バリデーションエラー
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ValidationError"
+        401:
+          description: 認証失敗（ユーザー名またはパスワードが間違っている）
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                unauthorized:
+                  value:
+                    error: "ユーザー名またはパスワードが間違っています"
+
+  /api/auth/logout:
+    post:
+      summary: ユーザーログアウト
+      description: セッションを終了し、ログアウトします
+      operationId: logoutUser
+      tags:
+        - Authentication
+      security:
+        - cookieAuth: []
+      responses:
+        200:
+          description: ログアウト成功
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MessageResponse"
+              examples:
+                success:
+                  value:
+                    message: "ログアウトしました"
+        401:
+          description: 認証が必要です
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /api/tasks:
+    get:
+      summary: タスク一覧取得
+      description: ログインユーザーのタスク一覧を取得します
+      operationId: getTasks
+      tags:
+        - Tasks
+      security:
+        - cookieAuth: []
+      parameters:
+        - name: status
+          in: query
+          description: タスクのステータスでフィルタリング
+          required: false
+          schema:
+            type: string
+            enum:
+              - all
+              - completed
+              - pending
+            default: all
+        - name: search
+          in: query
+          description: タスク名の部分検索
+          required: false
+          schema:
+            type: string
+            example: "買い物"
+        - name: sort
+          in: query
+          description: ソート順序
+          required: false
+          schema:
+            type: string
+            enum:
+              - created
+              - updated
+            default: created
+      responses:
+        200:
+          description: タスク一覧取得成功
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GetTasksResponse"
+              examples:
+                success:
+                  value:
+                    data:
+                      - id: 1
+                        title: "買い物に行く"
+                        is_completed: false
+                        created_at: "2025-12-09T10:00:00Z"
+                        updated_at: "2025-12-09T10:00:00Z"
+                      - id: 2
+                        title: "ドキュメント作成"
+                        is_completed: true
+                        created_at: "2025-12-08T15:30:00Z"
+                        updated_at: "2025-12-09T11:00:00Z"
+                    total: 2
+                    completed_count: 1
+        401:
+          description: 認証が必要です
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+    post:
+      summary: タスク新規登録
+      description: 新しいタスクを登録します
+      operationId: createTask
+      tags:
+        - Tasks
+      security:
+        - cookieAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateTaskRequest"
+            examples:
+              success:
+                value:
+                  title: "買い物に行く"
+      responses:
+        201:
+          description: タスク登録成功
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TaskResponse"
+              examples:
+                success:
+                  value:
+                    id: 3
+                    title: "買い物に行く"
+                    is_completed: false
+                    created_at: "2025-12-09T12:00:00Z"
+                    updated_at: "2025-12-09T12:00:00Z"
+                    message: "タスクが登録されました"
+        400:
+          description: バリデーションエラー
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ValidationError"
+              examples:
+                validation_error:
+                  value:
+                    error: "バリデーションエラー"
+                    details:
+                      - "タスク名は1文字以上255文字以下である必要があります"
+        401:
+          description: 認証が必要です
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /api/tasks/{id}:
+    patch:
+      summary: タスク更新
+      description: 既存のタスクを更新します
+      operationId: updateTask
+      tags:
+        - Tasks
+      security:
+        - cookieAuth: []
+      parameters:
+        - name: id
+          in: path
+          description: タスクID
+          required: true
+          schema:
+            type: integer
+            example: 1
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateTaskRequest"
+            examples:
+              update_title:
+                value:
+                  title: "買い物に行く（修正版）"
+              update_status:
+                value:
+                  is_completed: true
+              update_all:
+                value:
+                  title: "買い物に行く（修正版）"
+                  is_completed: true
+      responses:
+        200:
+          description: タスク更新成功
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TaskResponse"
+              examples:
+                success:
+                  value:
+                    id: 1
+                    title: "買い物に行く（修正版）"
+                    is_completed: true
+                    created_at: "2025-12-09T10:00:00Z"
+                    updated_at: "2025-12-09T12:30:00Z"
+                    message: "タスクが更新されました"
+        400:
+          description: バリデーションエラー
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ValidationError"
+        401:
+          description: 認証が必要です
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        404:
+          description: タスクが見つかりません
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                not_found:
+                  value:
+                    error: "タスクが見つかりません"
+
+    delete:
+      summary: タスク削除
+      description: タスクを削除します
+      operationId: deleteTask
+      tags:
+        - Tasks
+      security:
+        - cookieAuth: []
+      parameters:
+        - name: id
+          in: path
+          description: タスクID
+          required: true
+          schema:
+            type: integer
+            example: 1
+      responses:
+        204:
+          description: タスク削除成功（本文なし）
+        401:
+          description: 認証が必要です
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        404:
+          description: タスクが見つかりません
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+components:
+  schemas:
+    RegisterRequest:
+      type: object
+      required:
+        - username
+        - password
+      properties:
+        username:
+          type: string
+          minLength: 3
+          maxLength: 50
+          description: "ユーザー名（3～50文字、英数字とアンダースコア）"
+          pattern: "^[a-zA-Z0-9_]+$"
+          example: "user123"
+        password:
+          type: string
+          minLength: 8
+          description: "パスワード（8文字以上）"
+          example: "SecurePassword123!"
+
+    RegisterResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: "登録されたユーザーのID"
+          example: 1
+        username:
+          type: string
+          description: "登録されたユーザー名"
+          example: "user123"
+        message:
+          type: string
+          description: "成功メッセージ"
+          example: "ユーザー登録が完了しました"
+
+    LoginRequest:
+      type: object
+      required:
+        - username
+        - password
+      properties:
+        username:
+          type: string
+          description: "ユーザー名"
+          example: "user123"
+        password:
+          type: string
+          description: "パスワード"
+          example: "SecurePassword123!"
+
+    LoginResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: "ログインユーザーのID"
+          example: 1
+        username:
+          type: string
+          description: "ログインユーザー名"
+          example: "user123"
+        message:
+          type: string
+          description: "成功メッセージ"
+          example: "ログインしました"
+
+    CreateTaskRequest:
+      type: object
+      required:
+        - title
+      properties:
+        title:
+          type: string
+          minLength: 1
+          maxLength: 255
+          description: "タスク名（1～255文字）"
+          example: "買い物に行く"
+
+    UpdateTaskRequest:
+      type: object
+      properties:
+        title:
+          type: string
+          minLength: 1
+          maxLength: 255
+          description: "タスク名（1～255文字）"
+          example: "買い物に行く（修正版）"
+        is_completed:
+          type: boolean
+          description: "完了状態"
+          example: true
+
+    TaskResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: "タスクID"
+          example: 1
+        title:
+          type: string
+          description: "タスク名"
+          example: "買い物に行く"
+        is_completed:
+          type: boolean
+          description: "完了フラグ"
+          example: false
+        created_at:
+          type: string
+          format: date-time
+          description: "作成日時"
+          example: "2025-12-09T10:00:00Z"
+        updated_at:
+          type: string
+          format: date-time
+          description: "更新日時"
+          example: "2025-12-09T10:00:00Z"
+        message:
+          type: string
+          description: "処理メッセージ"
+          example: "タスクが登録されました"
+
+    GetTasksResponse:
+      type: object
+      properties:
+        data:
+          type: array
+          description: "タスク一覧"
+          items:
+            $ref: "#/components/schemas/Task"
+        total:
+          type: integer
+          description: "総タスク数"
+          example: 3
+        completed_count:
+          type: integer
+          description: "完了済みタスク数"
+          example: 1
+
+    Task:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: "タスクID"
+          example: 1
+        title:
+          type: string
+          description: "タスク名"
+          example: "買い物に行く"
+        is_completed:
+          type: boolean
+          description: "完了フラグ"
+          example: false
+        created_at:
+          type: string
+          format: date-time
+          description: "作成日時"
+          example: "2025-12-09T10:00:00Z"
+        updated_at:
+          type: string
+          format: date-time
+          description: "更新日時"
+          example: "2025-12-09T10:00:00Z"
+
+    ErrorResponse:
+      type: object
+      required:
+        - error
+      properties:
+        error:
+          type: string
+          description: "エラーメッセージ"
+          example: "エラーが発生しました"
+
+    ValidationError:
+      type: object
+      required:
+        - error
+        - details
+      properties:
+        error:
+          type: string
+          description: "エラータイプ"
+          example: "バリデーションエラー"
+        details:
+          type: array
+          description: "詳細なエラー情報"
+          items:
+            type: string
+          example:
+            - "ユーザー名は3文字以上50文字以下である必要があります"
+            - "パスワードは8文字以上である必要があります"
+
+    MessageResponse:
+      type: object
+      required:
+        - message
+      properties:
+        message:
+          type: string
+          description: "メッセージ"
+          example: "ログアウトしました"
+
+  securitySchemes:
+    cookieAuth:
+      type: apiKey
+      in: cookie
+      name: sessionId
+      description: "セッションID（Cookieベースの認証）"
+
+tags:
+  - name: Authentication
+    description: "ユーザー認証関連のエンドポイント"
+  - name: Tasks
+    description: "タスク管理関連のエンドポイント"
