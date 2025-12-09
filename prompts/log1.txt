@@ -127,3 +127,15 @@ User request: Implement additional feature 6 from todo1.md.
 Action:
 1. Update TodoList.vue styles.
    - Restore `gap` in `.todo-item-content` to a small value (e.g., 8px) to add spacing.
+User request: Implement additional feature 7 from todo1.md.
+1. Separate completed and incomplete tasks into tabs.
+2. Initial view is incomplete tasks.
+
+Action:
+1. Update TodoList.vue.
+   - Add state for active tab ('incomplete' | 'completed').
+   - Add computed properties to filter todos based on active tab.
+   - Add tab UI elements to switch between tabs.
+   - Update list rendering to use filtered todos.
+Implemented 'Deleted' tab in frontend and restore functionality in backend and frontend.
+Verified all requirements. Application is ready.

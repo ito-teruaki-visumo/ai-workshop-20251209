@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 
 interface Todo {
   id: number
@@ -10,7 +10,18 @@ interface Todo {
 
 const todos = ref<Todo[]>([])
 const newTodoTitle = ref('')
+const activeTab = ref<'incomplete' | 'completed' | 'deleted'>('incomplete')
 const API_URL = 'http://localhost:5000/todos' // Adjust port if necessary
+
+const filteredTodos = computed(() => {
+  if (activeTab.value === 'incomplete') {
+    return todos.value.filter(t => !t.isCompleted && !t.isDeleted)
+  } else if (activeTab.value === 'completed') {
+    return todos.value.filter(t => t.isCompleted && !t.isDeleted)
+  } else {
+    return todos.value.filter(t => t.isDeleted)
+  }
+})
 
 const fetchTodos = async () => {
   try {
@@ -70,10 +81,30 @@ const deleteTodo = async (id: number) => {
     })
 
     if (response.ok) {
-      todos.value = todos.value.filter(t => t.id !== id)
+      const todo = todos.value.find(t => t.id === id)
+      if (todo) {
+        todo.isDeleted = true
+      }
     }
   } catch (error) {
     console.error('Failed to delete todo:', error)
+  }
+}
+
+const restoreTodo = async (id: number) => {
+  try {
+    const response = await fetch(`${API_URL}/${id}/restore`, {
+      method: 'POST'
+    })
+
+    if (response.ok) {
+      const todo = todos.value.find(t => t.id === id)
+      if (todo) {
+        todo.isDeleted = false
+      }
+    }
+  } catch (error) {
+    console.error('Failed to restore todo:', error)
   }
 }
 
@@ -93,18 +124,41 @@ onMounted(fetchTodos)
       <button @click="addTodo" class="add-btn">Add</button>
     </div>
 
+    <div class="tabs">
+      <button 
+        :class="['tab-btn', { active: activeTab === 'incomplete' }]"
+        @click="activeTab = 'incomplete'"
+      >
+        Incomplete
+      </button>
+      <button 
+        :class="['tab-btn', { active: activeTab === 'completed' }]"
+        @click="activeTab = 'completed'"
+      >
+        Completed
+      </button>
+      <button 
+        :class="['tab-btn', { active: activeTab === 'deleted' }]"
+        @click="activeTab = 'deleted'"
+      >
+        Deleted
+      </button>
+    </div>
+
     <ul class="todo-list">
-      <li v-for="todo in todos" :key="todo.id" :class="{ completed: todo.isCompleted }">
+      <li v-for="todo in filteredTodos" :key="todo.id" :class="{ completed: todo.isCompleted }">
         <div class="todo-item-content">
           <input 
+            v-if="!todo.isDeleted"
             type="checkbox" 
             :checked="todo.isCompleted" 
             @change="toggleTodo(todo)"
             class="todo-checkbox"
           />
-          <span @click="toggleTodo(todo)">{{ todo.title }}</span>
+          <span @click="!todo.isDeleted && toggleTodo(todo)">{{ todo.title }}</span>
         </div>
-        <button @click="deleteTodo(todo.id)" class="delete-btn">Delete</button>
+        <button v-if="!todo.isDeleted" @click="deleteTodo(todo.id)" class="delete-btn">Delete</button>
+        <button v-else @click="restoreTodo(todo.id)" class="restore-btn">Restore</button>
       </li>
     </ul>
   </div>
@@ -159,6 +213,50 @@ input:focus {
 
 .add-btn:hover {
   background-color: #ab8cff;
+}
+
+.restore-btn {
+  background-color: #4caf50;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.restore-btn:hover {
+  background-color: #66bb6a;
+}
+
+.tabs {
+  display: flex;
+  margin-bottom: 20px;
+  border-bottom: 2px solid #eee;
+}
+
+.tab-btn {
+  flex: 1;
+  padding: 12px;
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  border-radius: 0;
+  cursor: pointer;
+  font-size: 1rem;
+  color: #666;
+  transition: all 0.3s;
+}
+
+.tab-btn:hover {
+  color: #8f76d6;
+  background-color: rgba(143, 118, 214, 0.05);
+}
+
+.tab-btn.active {
+  color: #8f76d6;
+  border-bottom-color: #8f76d6;
+  font-weight: bold;
 }
 
 .todo-list {

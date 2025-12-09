@@ -126,7 +126,7 @@ app.MapGet("/todos", async () =>
     await using var connection = new MySqlConnection(connectionString);
     await connection.OpenAsync();
     
-    await using var command = new MySqlCommand("SELECT Id, Title, IsCompleted, IsDeleted FROM Todos WHERE IsDeleted = FALSE", connection);
+    await using var command = new MySqlCommand("SELECT Id, Title, IsCompleted, IsDeleted FROM Todos", connection);
     await using var reader = await command.ExecuteReaderAsync();
     while (await reader.ReadAsync())
     {
@@ -183,6 +183,19 @@ app.MapDelete("/todos/{id}", async (int id) =>
 
     var rowsAffected = await command.ExecuteNonQueryAsync();
     return rowsAffected > 0 ? Results.NoContent() : Results.NotFound();
+});
+
+app.MapPost("/todos/{id}/restore", async (int id) =>
+{
+    await using var connection = new MySqlConnection(connectionString);
+    await connection.OpenAsync();
+
+    var sql = "UPDATE Todos SET IsDeleted = FALSE WHERE Id = @Id";
+    await using var command = new MySqlCommand(sql, connection);
+    command.Parameters.AddWithValue("@Id", id);
+
+    var rowsAffected = await command.ExecuteNonQueryAsync();
+    return rowsAffected > 0 ? Results.Ok() : Results.NotFound();
 });
 
 app.Run();
