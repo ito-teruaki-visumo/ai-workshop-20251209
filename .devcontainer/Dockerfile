@@ -1,12 +1,15 @@
-FROM node:24-bookworm
+FROM mcr.microsoft.com/devcontainers/javascript-node
 
-# Install build tooling and MySQL client for local debugging
+# Install extra tooling (MySQL client, pkg-config, .NET SDK 8.0)
 RUN apt-get update && apt-get install -y \
-    build-essential \
-    python3 \
-    pkg-config \
     default-mysql-client \
-    curl \
+    pkg-config \
+    && curl -sSL https://packages.microsoft.com/config/debian/12/packages-microsoft-prod.deb -o packages-microsoft-prod.deb \
+    && dpkg -i packages-microsoft-prod.deb \
+    && rm packages-microsoft-prod.deb \
+    && apt-get update \
+    && apt-get install -y \
+    dotnet-sdk-8.0 \
     && rm -rf /var/lib/apt/lists/*
 
 # Set working directory
