@@ -2,7 +2,7 @@
 
 ```bash
 cd workspae/TodoApi
-dotnet run
+dotnet run --launch-profile http
 ```
 
 # 動作確認

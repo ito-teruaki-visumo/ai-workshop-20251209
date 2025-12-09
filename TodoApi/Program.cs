@@ -1,44 +1,40 @@
+using MySqlConnector;
+
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
 }
 
-app.UseHttpsRedirection();
+// MySQL接続文字列（ハードコーディング）
+const string connectionString = "Server=db;Port=3306;Database=devdb;User=devuser;Password=devpassword;";
 
-var summaries = new[]
+// MySQL接続テスト用エンドポイント
+app.MapGet("/db-test", async () =>
 {
-    "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-};
+    try
+    {
+        await using var connection = new MySqlConnection(connectionString);
+        await connection.OpenAsync();
 
-app.MapGet("/weatherforecast", () =>
-{
-    var forecast =  Enumerable.Range(1, 5).Select(index =>
-        new WeatherForecast
-        (
-            DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
-            Random.Shared.Next(-20, 55),
-            summaries[Random.Shared.Next(summaries.Length)]
-        ))
-        .ToArray();
-    return forecast;
+        await using var command = new MySqlCommand("SELECT VERSION()", connection);
+        var version = await command.ExecuteScalarAsync();
+
+        return Results.Ok(new { status = "connected", mysqlVersion = version?.ToString() });
+    }
+    catch (Exception ex)
+    {
+        return Results.Problem($"MySQL connection failed: {ex.Message}");
+    }
 })
-.WithName("GetWeatherForecast")
+.WithName("DbTest")
 .WithOpenApi();
 
 app.Run();
-
-record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
-{
-    public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
-}

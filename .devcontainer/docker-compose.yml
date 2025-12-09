@@ -32,16 +32,17 @@ services:
       test:
         [
           "CMD",
-          "mysqladmin",
-          "ping",
+          "mysql",
           "-h",
           "localhost",
           "-uroot",
           "-prootpassword",
+          "-e",
+          "SELECT 1 FROM information_schema.SCHEMATA WHERE SCHEMA_NAME = 'devdb'",
         ]
       interval: 10s
       timeout: 5s
-      retries: 5
+      retries: 10
 
 networks:
   dev-network:
