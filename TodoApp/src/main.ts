@@ -2,10 +2,11 @@ import './assets/main.css'
 
 import { createApp } from 'vue'
 import App from './App.vue'
-import router from './router'
+
+console.log('=== main.ts 実行開始 ===')
 
 const app = createApp(App)
 
-app.use(router)
-
+console.log('=== App作成完了、マウント前 ===')
 app.mount('#app')
+console.log('=== マウント完了 ===')

@@ -1,6 +1,63 @@
-@TodoApi_HostAddress = http://0.0.0.0:5000
+@TodoApi_HostAddress = http://localhost:5001
 
+### DB接続テスト
 GET {{TodoApi_HostAddress}}/db-test
 Accept: application/json
+
+###
+
+### 1. クエスト一覧取得（空の状態）
+GET {{TodoApi_HostAddress}}/api/quests
+Content-Type: application/json
+
+###
+
+### 2. クエスト新規作成
+POST {{TodoApi_HostAddress}}/api/quests
+Content-Type: application/json
+
+{
+  "title": "データベース設計を完了する"
+}
+
+###
+
+### 3. クエスト新規作成（2つ目）
+POST {{TodoApi_HostAddress}}/api/quests
+Content-Type: application/json
+
+{
+  "title": "API実装を完了する"
+}
+
+###
+
+### 4. クエスト一覧取得（作成後）
+GET {{TodoApi_HostAddress}}/api/quests
+Content-Type: application/json
+
+###
+
+### 5. クエスト完了切り替え（idは作成されたクエストのIDに置き換え）
+PATCH {{TodoApi_HostAddress}}/api/quests/1/toggle
+Content-Type: application/json
+
+###
+
+### 6. クエスト完了切り替え（再度実行で未完了に戻る）
+PATCH {{TodoApi_HostAddress}}/api/quests/1/toggle
+Content-Type: application/json
+
+###
+
+### 7. クエスト削除（idは作成されたクエストのIDに置き換え）
+DELETE {{TodoApi_HostAddress}}/api/quests/2
+Content-Type: application/json
+
+###
+
+### 8. クエスト一覧取得（削除後の確認）
+GET {{TodoApi_HostAddress}}/api/quests
+Content-Type: application/json
 
 ###

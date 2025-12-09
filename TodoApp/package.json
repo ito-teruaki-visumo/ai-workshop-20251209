@@ -17,6 +17,7 @@
     "format": "prettier --write --cache --cache-location ./node_modules/.cache/prettier src/"
   },
   "dependencies": {
+    "axios": "^1.13.2",
     "vue": "^3.5.25",
     "vue-router": "^4.6.3"
   },

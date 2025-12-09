@@ -2,8 +2,21 @@ using MySqlConnector;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// コントローラーのサポートを追加
+builder.Services.AddControllers();
+
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+// CORS設定を追加
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowVue",
+        policy => policy
+            .WithOrigins("http://localhost:5173") // Viteのデフォルトポート
+            .AllowAnyMethod()
+            .AllowAnyHeader());
+});
 
 var app = builder.Build();
 
@@ -12,6 +25,12 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+// CORSミドルウェアを使用
+app.UseCors("AllowVue");
+
+// コントローラーのルーティングを有効化
+app.MapControllers();
 
 // MySQL接続文字列（ハードコーディング）
 const string connectionString = "Server=db;Port=3306;Database=devdb;User=devuser;Password=devpassword;";
